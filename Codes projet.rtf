@@ -1,0 +1,555 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+\
+#Chargement des librairies\
+library(ggplot2)\
+library(plotly)\
+library(dplyr)\
+library(mapview)\
+library(leaflet)	\
+library(shiny)\
+library(rmarkdown)\
+library(readxl)\
+library(rsconnect)\
+```\
+\
+# Charger fichiers Excel\
+covid <- read_xlsx("covid.xlsx")\
+Asie <- read_xlsx("Asie.xlsx")\
+Afrique <- read_xlsx("Afrique.xlsx")\
+Europe <- read_xlsx("Europe.xlsx")\
+ANord <- read_xlsx("ANord.xlsx")\
+ASud <- read_xlsx("ASud.xlsx")\
+Oceanie <- read_xlsx("Oceanie.xlsx")\
+\
+#pour supprimer les carac non numeriq\
+covid$TotGueris <- as.numeric(gsub("[^0-9,]", "", covid$TotGueris))\
+covid$TotMorts <- as.numeric(gsub("[^0-9,]", "", covid$TotMorts))\
+covid$CasTot <- as.numeric(gsub("[^0-9,]", "", covid$CasTot))\
+covid$CasCritiq <- as.numeric(gsub("[^0-9,]", "", covid$CasCritiq))\
+covid$CasActif <- as.numeric(gsub("[^0-9,]", "", covid$CasActif))\
+covid$TotTests <- as.numeric(gsub("[^0-9,]", "", covid$TotTests))\
+covid$Population <- as.numeric(gsub("[^0-9,]", "", covid$Population))\
+\
+#Asie\
+Asie$TotGueris <- as.numeric(gsub("[^0-9,]", "", Asie$TotGueris))\
+Asie$TotMorts <- as.numeric(gsub("[^0-9,]", "", Asie$TotMorts))\
+Asie$CasTot <- as.numeric(gsub("[^0-9,]", "", Asie$CasTot))\
+Asie$CasCritiq <- as.numeric(gsub("[^0-9,]", "", Asie$CasCritiq))\
+Asie$CasActif <- as.numeric(gsub("[^0-9,]", "", Asie$CasActif))\
+Asie$TotTests <- as.numeric(gsub("[^0-9,]", "", Asie$TotTests))\
+Asie$Population <- as.numeric(gsub("[^0-9,]", "", Asie$Population))\
+\
+#ANord\
+ANord$TotGueris <- as.numeric(gsub("[^0-9,]", "", ANord$TotGueris))\
+ANord$TotMorts <- as.numeric(gsub("[^0-9,]", "", ANord$TotMorts))\
+ANord$CasTot <- as.numeric(gsub("[^0-9,]", "", ANord$CasTot))\
+ANord$CasCritiq <- as.numeric(gsub("[^0-9,]", "", ANord$CasCritiq))\
+ANord$CasActif <- as.numeric(gsub("[^0-9,]", "", ANord$CasActif))\
+ANord$TotTests <- as.numeric(gsub("[^0-9,]", "", ANord$TotTests))\
+ANord$Population <- as.numeric(gsub("[^0-9,]", "", ANord$Population))\
+\
+#ASud\
+ASud$TotGueris <- as.numeric(gsub("[^0-9,]", "", ASud$TotGueris))\
+ASud$TotMorts <- as.numeric(gsub("[^0-9,]", "", ASud$TotMorts))\
+ASud$CasTot <- as.numeric(gsub("[^0-9,]", "", ASud$CasTot))\
+ASud$CasCritiq <- as.numeric(gsub("[^0-9,]", "", ASud$CasCritiq))\
+ASud$CasActif <- as.numeric(gsub("[^0-9,]", "", ASud$CasActif))\
+ASud$TotTests <- as.numeric(gsub("[^0-9,]", "", ASud$TotTests))\
+ASud$Population <- as.numeric(gsub("[^0-9,]", "", ASud$Population))\
+\
+#Afrique\
+Afrique$TotGueris <- as.numeric(gsub("[^0-9,]", "", Afrique$TotGueris))\
+Afrique$TotMorts <- as.numeric(gsub("[^0-9,]", "", Afrique$TotMorts))\
+Afrique$CasTot <- as.numeric(gsub("[^0-9,]", "", Afrique$CasTot))\
+Afrique$CasCritiq <- as.numeric(gsub("[^0-9,]", "", Afrique$CasCritiq))\
+Afrique$CasActif <- as.numeric(gsub("[^0-9,]", "", Afrique$CasActif))\
+Afrique$TotTests <- as.numeric(gsub("[^0-9,]", "", Afrique$TotTests))\
+Afrique$Population <- as.numeric(gsub("[^0-9,]", "", Afrique$Population))\
+\
+#Europe\
+Europe$TotGueris <- as.numeric(gsub("[^0-9,]", "", Europe$TotGueris))\
+Europe$TotMorts <- as.numeric(gsub("[^0-9,]", "", Europe$TotMorts))\
+Europe$CasTot <- as.numeric(gsub("[^0-9,]", "", Europe$CasTot))\
+Europe$CasCritiq <- as.numeric(gsub("[^0-9,]", "", Europe$CasCritiq))\
+Europe$CasActif <- as.numeric(gsub("[^0-9,]", "", Europe$CasActif))\
+Europe$TotTests <- as.numeric(gsub("[^0-9,]", "", Europe$TotTests))\
+Europe$Population <- as.numeric(gsub("[^0-9,]", "", Europe$Population))\
+\
+#Oceanie\
+Oceanie$TotGueris <- as.numeric(gsub("[^0-9,]", "", Oceanie$TotGueris))\
+Oceanie$TotMorts <- as.numeric(gsub("[^0-9,]", "", Oceanie$TotMorts))\
+Oceanie$CasTot <- as.numeric(gsub("[^0-9,]", "", Oceanie$CasTot))\
+Oceanie$CasCritiq <- as.numeric(gsub("[^0-9,]", "", Oceanie$CasCritiq))\
+Oceanie$CasActif <- as.numeric(gsub("[^0-9,]", "", Oceanie$CasActif))\
+Oceanie$TotTests <- as.numeric(gsub("[^0-9,]", "", Oceanie$TotTests))\
+Oceanie$Population <- as.numeric(gsub("[^0-9,]", "", Oceanie$Population))\
+\
+# Remplacer les valeurs manquantes par des z\'e9ros (facultatif)\
+covid$CasTot[is.na(covid$CasTot)] <- 0\
+covid$Population[is.na(covid$Population)] <- 0\
+\
+\
+# Calculez la densit\'e9 de population\
+covid$DensitePopulation <- covid$CasTot / covid$Population\
+\
+\
+\
+## Filtrage des donn\'e9es par Pays \
+\
+#Definir UI\
+ui <- fluidPage(\
+  titlePanel("Filtrage de Donn\'e9es par Pays"),\
+  sidebarLayout(\
+    sidebarPanel(\
+      selectInput("selected_country", "S\'e9lectionnez un pays :", choices = unique(covid$Pays)),\
+      hr(),\
+      checkboxGroupInput("selected_columns", "colonnes \'e0 afficher :",\
+                         choices = c("CasTot", "TotMorts", "TotGueris", "CasActif","CasCritiq","TotTests"),\
+                         selected = c("CasTot")\
+      )\
+    ),\
+    mainPanel(\
+      dataTableOutput("filtered_data")\
+    )\
+  )\
+)\
+\
+# Cr\'e9ez le serveur Shiny\
+server <- function(input, output) \{\
+  output$filtered_data <- renderDataTable(\{\
+    filtered_df <- covid %>%\
+      filter(Pays == input$selected_country) %>%\
+      select(input$selected_columns)\
+    \
+    return(filtered_df)\
+  \})\
+\}\
+\
+shinyApp(ui = ui, server = server)\
+\
+\
+\
+## Carte interactive des Pays les plus touch\'e9s par le Covid\
+\
+# Carte choropl\'e8te pour les cas confirm\'e9s par pays\
+world_map <- plot_ly(\
+  type = 'choropleth',\
+  locations = covid$Pays,\
+  locationmode = "country names",\
+  z = covid$CasTot,\
+  text = paste("Pays : ", covid$Pays, "<br> Cas totaux : ", covid$CasTot),\
+  colorscale = "Viridis",\
+  marker = list(line = list(width = 0.5)), # Param\'e8tre de marqueur\
+  colorbar = list(title = "Cas confirm\'e9s")\
+)\
+\
+# Afficher la carte choropl\'e8te\
+world_map\
+\
+\
+\
+## Carte interactive des d\'e9c\'e8s dans le monde\
+\
+#Cr\'e9er une carte choropl\'e8te\
+world_map <- plot_ly(covid, locations = ~Pays, type = 'choropleth',\
+                     locationmode = "country names",\
+                     z = ~TotMorts, colorscale = "YlOrRd", colorbar = list(title = "TotMorts"),\
+                     text = ~paste("Pays : ", Pays, "<br> TotMorts : ", TotMorts))\
+\
+#Titre de la carte choropl\'e8te\
+world_map <- layout(world_map, title = "Carte interactive des d\'e9c\'e8s dans le monde")\
+\
+#Afficher la carte \
+world_map\
+\
+\
+\
+\
+## Carte d\'e9c\'e8s dans le monde avec densit\'e9 de population\
+#Cr\'e9er une carte choropl\'e8te\
+world_map <- plot_ly(covid, locations = ~Pays, type = 'choropleth',\
+                     locationmode = "country names",\
+                     z = ~CasTot, colorscale = "YlOrRd", colorbar = list(title = "CasTot"),\
+                     text = ~paste("Pays : ", Pays, "<br> TotMorts : ", TotMorts, "<br> DensitePopulation : ", DensitePopulation))\
+\
+#Titre de la carte choropl\'e8te\
+world_map <- layout(world_map, title = "Carte des d\'e9c\'e8s dans le monde avec densit\'e9 de population")\
+\
+#Afficher la carte \
+world_map\
+\
+\
+\
+## Les dix pays les plus touch\'e9s dans le monde\
+\
+# Les 10 premiers pays avec le plus grand nombre de cas confirm\'e9s en ordre d\'e9croissant\
+covid_sorted <- covid[order(-covid$CasTot), ]\
+top_10_countries <- head(covid_sorted, 10)\
+\
+# Cr\'e9ation d'un graphique \'e0 barres\
+ggplot(top_10_countries, aes(x = reorder(Pays, -CasTot), y = CasTot, fill = "blue")) +\
+  geom_bar(stat = "identity") +\
+  scale_fill_manual(values = c("blue" = "blue")) +\
+  labs(x = "Pays", y = "CasTot") +\
+  ggtitle("Les dix pays avec le plus grand nombre de Cas Confirm\'e9s") +\
+  theme(axis.text.x = element_text(angle = 45, hjust = 1) ) + #rotation sur l'axe x\
+  coord_flip()  # Inverser l'axe x pour afficher les pays horizontalement\
+\
+\
+\
+\
+## Les dix pays les moins touch\'e9s dans le monde\
+\
+# Les 10 premiers pays avec le plus petit nombre de cas confirm\'e9s en ordre croissant \
+covid_sorted <- covid[order(covid$CasTot), ]\
+bottom_10_countries <- head(covid_sorted, 10)\
+\
+# Cr\'e9ation d'un graphique \'e0 barres\
+\
+ggplot(bottom_10_countries, aes(x = reorder(Pays, CasTot), y = CasTot, fill = "blue")) +\
+  geom_bar(stat = "identity") +\
+  scale_fill_manual(values = c("blue" = "blue")) +\
+  labs(x = "Pays", y = "CasTot") +\
+  ggtitle("Les dix pays avec le plus petit nombre de Cas Confirm\'e9s") +\
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +\
+  coord_flip()  # Inverser l'axe x pour afficher les pays horizontalement\
+\
+\
+\
+\
+## Les dix pays moins touch\'e9s par les d\'e9c\'e8s\
+\
+# Les 10 premiers pays avec le plus petit nombre de d\'e9c\'e8s (TotMorts)en ordre croissant \
+covid_sorted <- covid[order(covid$TotMorts, decreasing = FALSE), ]\
+bottom_10_countries <- head(covid_sorted, 10)\
+\
+# Cr\'e9ation du graphique \'e0 barres \
+\
+ggplot(bottom_10_countries, aes(x = reorder(Pays, TotMorts), y = TotMorts, fill = "red")) +\
+  geom_bar(stat = "identity") +\
+  scale_fill_manual(values = c("red" = "red")) +\
+  labs(x = "Pays", y = "D\'e9c\'e8s") +\
+  ggtitle("Les dix pays moins touch\'e9s par les D\'e9c\'e8s") +\
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))\
+\
+\
+\
+\
+## Les dix pays avec plus de d\'e9c\'e8s \
+\
+# Les 10 premiers pays avec le plus grand nombre de d\'e9c\'e8s (TotMorts) en ordre d\'e9croissant\
+covid_sorted <- covid[order(covid$TotMorts, decreasing = TRUE), ]\
+top_10_countries <- head(covid_sorted, 10)\
+\
+#  Cr\'e9ation d'un graphique \'e0 barres\
+bar_plot_cases <- ggplot(top_10_countries, aes(x = reorder(Pays, -TotMorts), y = TotMorts)) +\
+  geom_bar(stat = "identity", fill = "red") +\
+  labs(x = "Pays", y = "Deces",\
+       title = "Les dix pays avec le plus grand nombre de Dec\'e8s") +\
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +\
+  coord_flip()  # Inverser l'axe x pour afficher les pays horizontalement\
+\
+# Afficher le graphique \'e0 barres\
+print(bar_plot_cases)\
+\
+\
+\
+ \
+## Diagrammes circulaires des 10 premiers pays avec plus de cas confirm\'e9s\
+\
+# Les 10 premiers pays avec le plus grand nombre de cas confirm\'e9s (CasTot) en ordre d\'e9croissant\
+covid_sorted <- covid[order(covid$CasTot, decreasing = TRUE), ]\
+top_10_countries <- head(covid_sorted, 10)\
+\
+# Palette de couleurs \
+my_colors <- c("#E63946", "#F1FAEE", "#A8DADC", "#457B9D", "#1D3557", "#F4A261", "#2A9D8F", "#E76F51", "#F4A261", "#264653")\
+\
+# Diagramme circulaire\
+ggplot(data = top_10_countries, aes(x = "", y = CasTot, fill = Pays)) +\
+  geom_bar(stat = "identity") +\
+  coord_polar(theta = "y") +\
+  scale_fill_manual(values = my_colors) +\
+  theme_minimal() +\
+  labs(title = "Diagrammes des dix premiers pays avec le plus grand nombre de cas ")\
+\
+\
+\
+##Diagrammes des dix premiers pays avec le plus grand nombre de tests\
+\
+# Les 10 premiers pays avec le plus grand nombre de tests (TotTests) en ordre d\'e9croissant\
+covid_sorted <- covid[order(covid$TotTests, decreasing = TRUE), ]\
+top_10_countries <- head(covid_sorted, 10)\
+\
+# Palette de couleurs \
+my_colors <- c("#E63946", "#F1FAEE", "#A8DADC", "#457B9D", "#1D3557", "#F4A261", "#2A9D8F", "#E76F51", "#F4A261", "#264653")\
+\
+# Diagramme circulaire\
+ggplot(data = top_10_countries, aes(x = "", y = TotTests, fill = Pays)) +\
+  geom_bar(stat = "identity") +\
+  coord_polar(theta = "y") +\
+  scale_fill_manual(values = my_colors) +\
+  theme_minimal() +\
+  labs(title = "Diagrammes des dix premiers pays avec le plus grand nombre de tests ")\
+\
+\
+\
+\
+##Relation entre la densit\'e9 de population et le nombre de cas confirm\'e9s\
+\
+# Nuage de points densit\'e9 de population et cas confirm\'e9s\
+ggplot(data = covid, aes(x = DensitePopulation, y = CasTot)) +\
+  geom_point() +\
+  labs(x = "Densit\'e9 de Population", y = "CasTot") +\
+  ggtitle(" Relation entre la densit\'e9 de population et le nombre de cas confirm\'e9s")\
+\
+# R\'e9gression lin\'e9aire\
+ggplot(data = covid, aes(x = DensitePopulation, y = CasTot)) +\
+  geom_point() +\
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +\
+  labs(x = "Densit\'e9 de Population", y = "CasTot") +\
+  ggtitle("Relation avec R\'e9gression Lin\'e9aire")\
+\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 ##Densit\'e9 de Population et CasTot) avec R\'e9gression Lin\'e9aire\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 ggplot(data = covid, aes(x = log(DensitePopulation), y = log(CasTot))) +\
+  geom_point() +\
+  labs(x = "Log(Densit\'e9 de Population)", y = "Log(CasTot)") +\
+  ggtitle("Log(Densit\'e9 de Population) et Log(CasTot)")\
+\
+ggplot(data = covid, aes(x = log(DensitePopulation), y = log(CasTot))) +\
+  geom_point() +\
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +\
+  labs(x = "Log(Densit\'e9 de Population)", y = "Log(CasTot)") +\
+  ggtitle("Log(Densit\'e9 de Population et CasTot) avec R\'e9gression Lin\'e9aire")\
+\
+\
+\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 ##Relation entre densit\'e9 de population et nombre de d\'e9c\'e8s (\'e9chelle logarithmique\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 # Nettoyage de la colonne TotMorts\
+covid <- covid[!is.na(log(covid$TotMorts)) & is.finite(log(covid$TotMorts)),]\
+\
+# Nuage de points pour visualiser la relation avec une transformation logarithmique\
+scatter_plot <- ggplot(covid, aes(x = DensitePopulation, y = log(TotMorts))) +\
+  geom_point() +\
+  geom_smooth(method = "lm", se = FALSE, color = "red") + \
+  labs(x = "Densit\'e9 de Population", y = "Log(TotMorts)") +\
+  ggtitle("Relation entre densit\'e9 de population et nombre de d\'e9c\'e8s (\'e9chelle logarithmique)")\
+\
+print(scatter_plot)\
+\
+# R\'e9gression lin\'e9aire avec une transformation logarithmique\
+regression <- lm(log(TotMorts) ~ DensitePopulation, data = covid)\
+\
+#Afficher r\'e9sultat \
+summary(regression)\
+\
+\
+\
+##Pays avec la plus forte densit\'e9 de population\
+\
+# Les 10 pays avec la plus forte densit\'e9 de population en ordre d\'e9croissante\
+covid <- covid[order(-covid$DensitePopulation), ]\
+top_countries <- head(covid, 10)\
+\
+# Graphique \'e0 barres pour la densit\'e9 de population \
+bar_plot <- ggplot(top_countries, aes(x = reorder(Pays, DensitePopulation), y = DensitePopulation, fill = reorder(Pays, DensitePopulation))) +\
+  geom_bar(stat = "identity") +\
+  labs(x = "Pays", y = "Densit\'e9 de Population", fill = "Pays") +\
+  ggtitle("Pays avec la plus forte densit\'e9 de population ") +\
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Pour faire pivoter les \'e9tiquettes sur l'axe des x\
+\
+#Afficher le graphique \
+print(bar_plot)\
+\
+\
+\
+\
+## Tableau interactif de classement des pays en fonction de diff\'e9rents crit\'e8re\
+\
+# Definir UI\
+ui <- fluidPage(\
+  titlePanel("Classement des Pays"),\
+  sidebarLayout(\
+    sidebarPanel(\
+      selectInput("critere", "S\'e9lectionnez un crit\'e8re de classement :",\
+  choices = c("CasTot", "TotMorts", "TotGueris","CasActif","TotTests")),\
+      numericInput("nombre_pays", "Nombre de pays \'e0 afficher :", value = 10)\
+    ),\
+    mainPanel(\
+      tableOutput("classement_table")\
+    )\
+  )\
+)\
+\
+# D\'e9finir le serveur Shiny\
+server <- function(input, output) \{\
+  output$classement_table <- renderTable(\{\
+    # S\'e9lectionner le crit\'e8re de classement choisi\
+    critere <- input$critere\
+    # Convertir la colonne en num\'e9rique et g\'e9rer les valeurs manquantes\
+    covid[[critere]] <- as.numeric(as.character(covid[[critere]]))\
+    covid <- na.omit(covid)\
+    # Trier le dataframe en fonction du crit\'e8re\
+    covid_sorted <- covid[order(covid[[critere]], decreasing = TRUE), ]\
+    # S\'e9lectionner les premiers pays en fonction du nombre sp\'e9cifi\'e9\
+    top_countries <- head(covid_sorted, input$nombre_pays)\
+    top_countries\
+  \})\
+\}\
+\
+#Lancer l'application Shiny\
+shinyApp(ui = ui, server = server)\
+\
+\
+\
+## Comparaison des cas actifs par continent\
+\
+# Definir UI\
+ui <- fluidPage(\
+  titlePanel("Comparaison des Cas Actifs par Continent"),\
+  mainPanel(\
+    selectInput("continent", "Choisissez un continent :",\
+                choices = c("Asie", "Europe", "Afrique", "ANord", "ASud", "Oceanie")),\
+    plotOutput("histogram")\
+  )\
+)\
+\
+server <- function(input, output) \{\
+  # Utilisez un contexte r\'e9actif pour obtenir la valeur de 'continent'\
+  selected_continent <- reactive(\{\
+    switch(input$continent,\
+           "Asie" = Asie,\
+           "Europe" = Europe,\
+           "Afrique" = Afrique,\
+           "ANord" = ANord,\
+           "ASud" = ASud,\
+           "Oceanie" = Oceanie\
+    )\
+  \})\
+  \
+  # Cr\'e9ez l'histogramme pour comparer les cas actifs par continent\
+  output$histogram <- renderPlot(\{\
+    ggplot(data = selected_continent(), aes(x = "", y = CasActif, fill = Pays)) +\
+      geom_bar(stat = "identity") +\
+      labs(x = "Continent", y = "Cas Actifs") +\
+      ggtitle("Histogramme des Cas Actifs par Continent") +\
+      scale_fill_manual(values = rainbow(length(unique(selected_continent()$Pays))))\
+  \})\
+\}\
+\
+#Lancer l'application Shiny\
+shinyApp(ui, server)\
+\
+\
+\
+\
+## Comparaison des dec\'e8s par continent\
+\
+# Combinez les donn\'e9es de chaque continent en un seul dataframe\
+combined_data <- bind_rows(\
+  Asie %>% mutate(Continent = "Asie"),\
+  Afrique %>% mutate(Continent = "Afrique"),\
+  Europe %>% mutate(Continent = "Europe"),\
+  ANord %>% mutate(Continent = "A.Nord"),\
+  ASud %>% mutate(Continent = "A.Sud"),\
+  Oceanie %>% mutate(Continent = "Oc\'e9anie")\
+)\
+\
+# Un camembert repr\'e9sentant le nombre total de d\'e9c\'e8s par continent\
+ggplot(combined_data, aes(x = "", y = TotMorts, fill = Continent)) +\
+  geom_bar(stat = "identity") +\
+  coord_polar("y") + # Transformer en coordonn\'e9es polaires pour obtenir un diagramme circulaire\
+  labs(title = "Comparaison d\'e9c\'e8s par continent") +\
+  scale_fill_manual(values = c("Asie" = "blue", "Afrique" = "red", "Europe" = "green", "A.Nord" = "purple", "A.Sud" = "orange", "Oc\'e9anie" = "pink")) +\
+  theme_void() #th\'e8me vide pour supprimer les \'e9l\'e9ments de base du graphique\
+\
+\
+\
+ \
+## Comparaison des tests par continents \
+\
+# Diagramme circulaire repr\'e9sentant le nombre total de tests par continent\
+  ggplot(combined_data, aes(x = "", y = TotTests, fill = Continent)) +\
+  geom_bar(stat = "identity") +\
+  coord_polar("y") +\
+  labs(title = "Comparaison tests par continent") +\
+  scale_fill_manual(values = c("Asie" = "blue", "Afrique" = "red", "Europe" = "green", "A.Nord" = "purple", "A.Sud" = "orange", "Oc\'e9anie" = "pink")) +\
+  theme_void()\
+\
+ \
+\
+\
+## Regroupement par K-means\
+\
+# S\'e9lection des caract\'e9ristiques pertinentes\
+data_for_clustering <- select(covid, CasTot, TotMorts,TotTests)\
+\
+# Donn\'e9es normalis\'e9es pour avoir la m\'eame \'e9chelle\
+normalized_data <- scale(data_for_clustering)\
+\
+# Choix du nombre de clusters (k)\
+k <- 3  \
+\
+# Algorithme K-means\
+kmeans_result <- kmeans(normalized_data, centers = k)\
+\
+# Ajout des clusters aux donn\'e9es d'origine\
+covid$Cluster <- kmeans_result$cluster\
+\
+# Visualisation des r\'e9sultats avec un graphique de dispersion\
+ggplot(covid, aes(x = CasTot, y = TotMorts, color = factor(Cluster), size = TotTests)) +\
+  geom_point() +\
+  labs(x = "Cas Confirm\'e9s", y = "D\'e9c\'e8s") +\
+  scale_color_discrete(name = "Cluster") +\
+  scale_size_continuous(name = "Total des Tests", labels = scales::comma) +\
+  ggtitle("Regroupement des pays par K-means")\
+\
+\
+\
+\
+## Existance des diff\'e9rences entre les continents en ce qui concerne les cas confirm\'e9s\
+\
+# Combinez les donn\'e9es de chaque continent en un seul dataframe\
+combined_data <- bind_rows(\
+  Europe %>% mutate(Continent = "Europe"),\
+  Afrique %>% mutate(Continent = "Afrique"),\
+  Asie %>% mutate(Continent = "Asie"),\
+  ANord %>% mutate(Continent = "Am\'e9rique du Nord"),\
+  ASud %>% mutate(Continent = "Am\'e9rique du Sud"),\
+  Oceanie %>% mutate(Continent = "Oc\'e9anie")\
+)\
+# Effectuer un test ANOVA pour les cas confirm\'e9s entre les continents\
+anova_result <- aov(CasTot ~ Continent, data = combined_data)\
+\
+# Afficher les r\'e9sultats\
+summary(anova_result)\
+\
+\
+\
+##Corr\'e9lation entre la densit\'e9 de population et le nombre total de d\'e9c\'e8s \
+\
+# Utilisation du test de corr\'e9lation de Pearson\
+correlation_result <- cor.test(covid$DensitePopulation, covid$TotMorts, method = "pearson")\
+\
+# Affichage des r\'e9sultats\
+print(correlation_result)\
+\
+\
+\
+}
